@@ -39,13 +39,25 @@ df_location.rename(columns={"Adresse_longitude": "lon", "Adresse_latitude": "lat
 # Reverse geocoding the location
 # rerun the notebook Gripp Data.ipynb
 
+
 # Regions are stored in the column "region"
-df_location['region']
+st.dataframe(df_location.groupby(['region']).count().sort_values(by=['index'], ascending=False)['index'], width=400)
 
 
 df_location["latitude"] = pd.to_numeric(df_location["lat"], downcast="float")
 df_location["longitude"] = pd.to_numeric(df_location["lon"], downcast="float")
 
-st.map(df_location[['lon', 'lat']])
+# Plot by region
+region = df_location['region'].unique().tolist()
+region.insert(0, "all region")
+
+option = st.selectbox(
+    'Which region do you want to plot?',
+    region)
+
+if option == "all region":
+    st.map(df_location[['lon', 'lat']])
+else:
+    st.map(df_location[df_location.region == option][['lon', 'lat']])
 
 st.write("###### Every red dot is a place where you can get vaccinated from flu.")
